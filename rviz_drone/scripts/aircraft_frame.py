@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-
 """
 Broadcast static effector reference frame wrt to base frame of UAV
-
 """
 
 from geometry_msgs.msg import TransformStamped
@@ -11,7 +9,6 @@ from geometry_msgs.msg import TransformStamped
 import rclpy
 from rclpy.node import Node
 from tf2_ros import TransformBroadcaster
-
 
 from drone_interfaces.msg import Telem, CtlTraj
 from rviz_drone.rotation_utils import get_quaternion_from_euler
@@ -67,6 +64,7 @@ class AircraftFrame(Node):
                                                         'mavros/local_position/odom', 
                                                         self.mavros_state_callback, 
                                                         qos_profile=SENSOR_QOS)
+            # TODO: map this with ardupilot telem message
             else:
                 print('Subscribing to telem')        
                 # self.state_sub = self.create_subscription(Telem, 
@@ -74,9 +72,6 @@ class AircraftFrame(Node):
                 #     self.state_callback,
                 #     self.sub_freq)
         
-            
-        
-
         def mavros_state_callback(self, msg:mavros.local_position.Odometry)->None:
             self.x = msg.pose.pose.position.x
             self.y = msg.pose.pose.position.y
@@ -87,10 +82,6 @@ class AircraftFrame(Node):
                                msg.pose.pose.orientation.z,
                                msg.pose.pose.orientation.w]
             
-            # roll,pitch,yaw = get_quaternion_from_euler(quaternion)
-            # self.roll = roll
-            # self.pitch = pitch
-            # self.yaw = yaw
             self.broadcastTransform()
         
         def broadcastTransform(self):
@@ -112,7 +103,6 @@ class AircraftFrame(Node):
             print(f'position: {position}')
     
             self.br.sendTransform(t)    
-
 
 def main(args=None):
     rclpy.init(args=args)

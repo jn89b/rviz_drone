@@ -49,6 +49,7 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   scripts/aircraft_vis.py
   scripts/aircraft_frame.py
+  scripts/traj_vis.py
   # scripts/directional_traj.py
   # scripts/avoid_traj.py
   # scripts/waypoint_traj.py

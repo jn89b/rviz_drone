@@ -45,8 +45,6 @@ class WaypointViz(Node):
         # self.traj_counter = 0
         # self.id = 0
         
-    
-
     def waypointCallback(self,msg:Waypoints)->None:
         """
         Listen for waypoints and publish waypoints
