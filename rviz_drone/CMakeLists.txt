@@ -50,6 +50,9 @@ install(PROGRAMS
   scripts/aircraft_vis.py
   scripts/aircraft_frame.py
   scripts/traj_vis.py
+  scripts/obstacle_vis.py
+  scripts/goal_vis.py
+  scripts/aircraft_actual_frame.py
   # scripts/directional_traj.py
   # scripts/avoid_traj.py
   # scripts/waypoint_traj.py

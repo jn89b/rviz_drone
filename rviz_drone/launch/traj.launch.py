@@ -20,7 +20,7 @@ def generate_launch_description() -> LaunchDescription:
     
     life_time_arg = DeclareLaunchArgument(
         'life_time',
-        default_value='2.0',
+        default_value='0.01',
         description='life time of trajectory marker'
     )
     
@@ -92,7 +92,7 @@ def generate_launch_description() -> LaunchDescription:
     
     alpha_color_arg = DeclareLaunchArgument(
         'alpha_color',
-        default_value='1.0',
+        default_value='0.7',
         description='alpha color of trajectory marker'
     )
     

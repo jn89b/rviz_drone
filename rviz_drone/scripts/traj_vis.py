@@ -14,16 +14,16 @@ class TrajViz(Node):
         super().__init__("traj_visualizer")
 
         self.declare_parameter('scale_size', 0.05)
-        self.declare_parameter('life_time', 2.0)
+        self.declare_parameter('life_time', 0.01)
         self.declare_parameter('parent_frame', 'map')
         self.declare_parameter('child_frame', 'trajectory_frame')
-        self.declare_parameter('rate', 30.0)
+        self.declare_parameter('rate', 50.0)
         self.declare_parameter('ns', 'trajectory')
         self.declare_parameter('topic_name', 'trajectory')
         self.declare_parameter('red_color', 1.0)
         self.declare_parameter('green_color', 0.0)
         self.declare_parameter('blue_color', 0.0)
-        self.declare_parameter('alpha_color', 1.0)
+        self.declare_parameter('alpha_color', 0.5)
         
         self.scale_size = self.get_parameter('scale_size').value
         self.life_time = self.get_parameter('life_time').value
@@ -38,7 +38,7 @@ class TrajViz(Node):
         self.blue_color = self.get_parameter('blue_color').value
         self.alpha_color = self.get_parameter('alpha_color').value
         
-        self.traj_sub = self.create_subscription(CtlTraj, '/trajectory',
+        self.traj_sub = self.create_subscription(CtlTraj, 'trajectory',
                                                 self.trajCallback, self.rate)
         
         self.traj_pub = self.create_publisher(MarkerArray, 
@@ -46,9 +46,8 @@ class TrajViz(Node):
                                               self.rate)
         
         self.traj_counter = 0
-        self.marker_array = MarkerArray()
-        self.max_markers = 100
-        
+        self.max_markers = 1
+    
     def trajCallback(self,msg:CtlTraj)->None:
         """
         Visualize trajectory waypoints
@@ -57,30 +56,31 @@ class TrajViz(Node):
 
         # keep in the trajectories are in NED frame, 
         # need to rotate this to ENU frame
+        self.marker_array = MarkerArray()
+
         marker_array = self.marker_array
         
         x_waypoints = msg.y
         y_waypoints = msg.x
         z_waypoints = msg.z         
-
-        marker = Marker()
-        marker.type = Marker.LINE_STRIP
-        marker.action = Marker.ADD
         
-        marker.scale.x = scale_size
-        marker.scale.y = scale_size
-        marker.scale.z = scale_size
-
-        marker.color.r = self.red_color
-        marker.color.b = self.blue_color
-        marker.color.g = self.green_color
-        marker.color.a = self.alpha_color
-
-        if self.traj_counter > self.max_markers:
-            marker_array.markers.pop(0)
+        # if self.traj_counter > self.max_markers:
+        #     marker_array.markers.pop(0)
             
         id_num = 0
         for x_wp,y_wp,z_wp in zip(x_waypoints,y_waypoints,z_waypoints):
+            marker = Marker()
+            marker.type = Marker.SPHERE_LIST
+            marker.action = Marker.ADD
+            
+            marker.scale.x = scale_size
+            marker.scale.y = scale_size
+            marker.scale.z = scale_size
+
+            marker.color.r = self.red_color
+            marker.color.b = self.blue_color
+            marker.color.g = self.green_color
+            marker.color.a = self.alpha_color
 
             wp = Point()
             wp.x = x_wp/SCALE_SIM
@@ -89,12 +89,12 @@ class TrajViz(Node):
             
             marker.points.append(wp)
 
-            marker.id = id_num
+            marker.id = self.traj_counter
             marker.header.stamp = self.get_clock().now().to_msg()
             marker.header.frame_id = "/map"
             marker.ns = self.ns
             # marker.namespace = "trajectory"
-            marker.lifetime = rclpy.duration.Duration(seconds=self.life_time).to_msg()
+            marker.lifetime = rclpy.duration.Duration(seconds=0.1).to_msg()
             marker_array.markers.append(marker)
             
             id_num += 1
