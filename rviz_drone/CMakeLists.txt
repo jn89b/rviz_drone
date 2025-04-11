@@ -17,8 +17,10 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
-
 find_package(rosidl_default_generators REQUIRED)
+find_package(drone_interfaces REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 # rosidl_generate_interfaces(${PROJECT_NAME}
 #   "msg/Telem.msg"
@@ -31,17 +33,23 @@ find_package(rosidl_default_generators REQUIRED)
 #   "srv/SetTakeOff.srv"
 #   # "srv/getGSInfo.srv"
 #  )
-
-# # Include Cpp "include" directory
-# include_directories(include)
-# # Create Cpp executable
-# add_executable(cpp_node src/cpp_node.cpp)
-# ament_target_dependencies(cpp_node rclcpp)
-# # Install Cpp executables
-# install(TARGETS
-#   cpp_node
-#   DESTINATION lib/${PROJECT_NAME}
-# )
+# Include Cpp "include" directory
+include_directories(include)
+# Create Cpp executable
+add_executable(aircraft_frame_node src/aircraft_frame_node.cpp src/aircraft_frame_c.cpp)
+ament_target_dependencies(
+  aircraft_frame_node
+    rclcpp
+    std_msgs
+    drone_interfaces
+    tf2
+    tf2_ros
+)
+# Install Cpp executables
+install(TARGETS
+  aircraft_frame_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 # Install Python modules
 ament_python_install_package(${PROJECT_NAME})

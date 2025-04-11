@@ -15,6 +15,7 @@ from rviz_drone.rotation_utils import get_quaternion_from_euler
 from rviz_drone.config import SCALE_SIM
 
 import mavros
+import time
 from mavros.base import SENSOR_QOS
 
 class AircraftFrame(Node):
@@ -25,6 +26,7 @@ class AircraftFrame(Node):
                      sub_to_mavros:bool=True):
             super().__init__('aircraft_frame')
 
+            # This is typically private attributes 
             self.pub_freq = pub_freq
             self.sub_freq = sub_freq
             self.sub_to_mavros = sub_to_mavros
@@ -72,6 +74,7 @@ class AircraftFrame(Node):
                 #     self.state_callback,
                 #     self.sub_freq)
         
+        # These are all your methods
         def mavros_state_callback(self, msg:mavros.local_position.Odometry)->None:
             self.x = msg.pose.pose.position.x
             self.y = msg.pose.pose.position.y
@@ -82,7 +85,9 @@ class AircraftFrame(Node):
                                msg.pose.pose.orientation.z,
                                msg.pose.pose.orientation.w]
             
+            start_time = time.time()
             self.broadcastTransform()
+            print("time to compute is", time.time()- start_time)
         
         def broadcastTransform(self):
             t = TransformStamped()
@@ -100,7 +105,7 @@ class AircraftFrame(Node):
             position = [t.transform.translation.x,
                         t.transform.translation.y,
                         t.transform.translation.z]
-            print(f'position: {position}')
+            # print(f'position: {position}')
     
             self.br.sendTransform(t)    
 
